@@ -1,0 +1,41 @@
+.DS_Store
+.env.development.local
+.env.local
+.env.production.local
+.env.test.local
+.envrc
+.eslintcache
+.history
+.idea
+.vercel
+.vscode
+.yarn
+*.log
+*.tgz
+build
+dist
+firebase
+logs
+node_modules
+npm-debug.log*
+package-lock.json
+yarn-debug.log*
+yarn-error.log*
+packages/excalidraw/types
+coverage
+dev-dist
+html
+meta*.json
+.claude
+
+# Day 4 — MCP: never commit a populated mcp.json (may contain secrets)
+.cursor/mcp.json
+
+# Day 4 — MCP: build artefacts and virtualenvs of custom MCP servers
+mcp-examples/**/dist
+mcp-examples/**/.venv
+mcp-examples/**/__pycache__
+mcp-examples/**/*.egg-info
+
+# Windows Git Bash safety: avoid tracking accidental `nul` files
+nul

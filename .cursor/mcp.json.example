@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem@2025.10.20",
+        "./excalidraw-app",
+        "./examples"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github@2025.4.8"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GH_PAT}"
+      },
+      "disabled": true
+    },
+    "excalidraw-scenes-ts": {
+      "command": "node",
+      "args": ["./mcp-examples/excalidraw-scenes-ts/dist/server.js"],
+      "disabled": true
+    },
+    "excalidraw-scenes-py": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "./mcp-examples/excalidraw-scenes-py",
+        "excalidraw-scenes-mcp"
+      ],
+      "disabled": true
+    }
+  }
+}

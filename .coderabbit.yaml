@@ -1,0 +1,243 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit config for auto-grading workshop Day 4 PRs (MCP)
+# Place this file in the ROOT of the Excalidraw fork repository.
+
+language: "uk-UA"
+# max 250 chars (CodeRabbit schema)
+tone_instructions: "Ментор Day 4 (MCP) воркшопу. Відповідь українською: добрий тон, але вимогливо. Перевір MCP-конфіг, custom server, безпеку, A/B-тест. Статуси: ✅ ок, ⚠️ частково, ❌ ні."
+
+early_access: false
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: false
+
+  auto_review:
+    enabled: true
+    drafts: true
+    auto_incremental_review: true
+    auto_pause_after_reviewed_commits: 0
+    base_branches:
+      - ".*"
+    ignore_title_keywords:
+      - "WIP"
+      - "[skip review]"
+    ignore_usernames:
+      - "dependabot[bot]"
+      - "renovate[bot]"
+      - "github-actions[bot]"
+
+  # ── File filters ──────────────────────────────────────────────
+  path_filters:
+    - ".cursor/mcp.json"
+    - ".cursor/mcp.json.example"
+    - "mcp-examples/**"
+    - "AGENTS.md"
+    - "docs/mcp/**"
+    - "docs/mcp-testing/**"
+    - "!node_modules/**"
+    - "!dist/**"
+    - "!build/**"
+    - "!coverage/**"
+    - "!*.lock"
+    - "!package-lock.json"
+    - "!yarn.lock"
+    - "!**/*.snap"
+    - "!**/*.min.js"
+    - "!**/*.min.css"
+    - "!mcp-examples/**/dist/**"
+    - "!mcp-examples/**/.venv/**"
+
+  # ── Path-specific review instructions ─────────────────────────
+  path_instructions:
+    - path: ".cursor/mcp.json.example"
+      instructions: |
+        Це шаблон конфігурації MCP-серверів — завдання День 4.
+        Перевір:
+        1. Файл — валідний JSON з кореневим ключем `mcpServers`.
+        2. Налаштовано щонайменше 2 публічних MCP-сервери (filesystem, github, context7, fetch, git, memory тощо).
+        3. Жодних літеральних секретів — токени та паролі ТІЛЬКИ через `${env:VAR}`.
+        4. Шляхи `filesystem` обмежені піддиректоріями репо (НЕ `/`, НЕ `~`).
+        5. Версії пакетів запіновані (`@1.2.3`), а не `@latest`.
+        6. Чутливі сервери (github з write-scope тощо) мають `"disabled": true` за замовчуванням.
+        Оціни: ✅ безпечно і коректно / ⚠️ є незначні проблеми (непінована версія, надмірний scope) / ❌ JSON невалідний, секрети в файлі, або немає 2 серверів.
+
+    - path: ".cursor/mcp.json"
+      instructions: |
+        ❌ КРИТИЧНО: цей файл має бути в .gitignore і НЕ комітитися — може містити секрети.
+        Якщо бачиш цей файл у PR:
+        1. Перевір, чи немає літеральних токенів/секретів.
+        2. Попередь автора негайно ротувати секрети, якщо вони були в файлі.
+        3. Запропонуй перейменувати файл на `.cursor/mcp.json.example` та додати `.cursor/mcp.json` у `.gitignore`.
+
+    - path: "mcp-examples/*/src/server.ts"
+      instructions: |
+        Це custom MCP-сервер на TypeScript — завдання День 4.
+        Перевір:
+        1. Імпорти з `@modelcontextprotocol/sdk/server/mcp.js` + `@modelcontextprotocol/sdk/server/stdio.js`.
+        2. Реєстрація інструментів через `server.registerTool(name, config, handler)` зі schema (zod).
+        3. Щонайменше 2 інструменти і бажано 1 ресурс (`server.registerResource`).
+        4. Помилки повертаються як `{ content: [...], isError: true }` або кидаються — НЕ ігноруються.
+        5. ❌ ЖОДНОГО `console.log` (ламає stdio JSON-RPC). Тільки `console.error` для діагностики.
+        6. Інструменти роблять корисну роботу для Excalidraw, не "hello world".
+        7. Шляхи з вводу валідуються (не дозволяти `..` за межі workspace, якщо це важливо).
+        Оціни: ✅ робочий, типобезпечний, валідуючий ввід / ⚠️ працює але без обробки помилок / ❌ не запускається або має `console.log` у stdout.
+
+    - path: "mcp-examples/*/server.py"
+      instructions: |
+        Це custom MCP-сервер на Python — завдання День 4.
+        Перевір:
+        1. Використовує `from mcp.server.fastmcp import FastMCP`.
+        2. Інструменти декоровані `@mcp.tool()` з типізованими аргументами + docstring (стає описом для LLM).
+        3. Щонайменше 2 інструменти і бажано 1 ресурс (`@mcp.resource("uri")`).
+        4. Запуск через `mcp.run()` (stdio за замовчуванням).
+        5. ❌ ЖОДНОГО `print(...)` без `file=sys.stderr` — ламає stdio JSON-RPC.
+        6. Шляхи з вводу валідуються (Path checks, ніяких arbitrary `eval`/`exec`).
+        7. Інструменти роблять корисну роботу для Excalidraw.
+        Оціни: ✅ робочий, типізований, безпечний / ⚠️ працює але без типів/docstring / ❌ не запускається або пише в stdout.
+
+    - path: "mcp-examples/*/README.md"
+      instructions: |
+        Це README для custom MCP-сервера — завдання День 4.
+        Перевір наявність:
+        1. Назва і призначення сервера.
+        2. Перелік інструментів (tools) і ресурсів з описом.
+        3. Команда запуску локально (npm/uv команди).
+        4. Приклад блоку для `.cursor/mcp.json`.
+        5. Приклади тестових промптів.
+        Оціни: ✅ повний і зрозумілий / ⚠️ не вистачає секцій / ❌ порожній або шаблонний.
+
+    - path: "AGENTS.md"
+      instructions: |
+        Це AGENTS.md — обов'язковий файл завдання День 4.
+        Перевір наявність та якість таких секцій:
+        1. Project Overview — суть проєкту Excalidraw.
+        2. Tech Stack — React, TypeScript, Vite, Yarn workspaces, Vitest.
+        3. Project Structure — опис monorepo layout.
+        4. Key Commands — yarn build, yarn test, yarn start тощо.
+        5. Architecture — основні компоненти, state management, rendering.
+        6. Conventions — naming, code style, PR workflow.
+        7. Skills — успадкована з Day 3 секція з описом скілів.
+        8. **MCPs** — НОВА секція для Day 4: перелік публічних і custom MCP з описом, що роблять, до яких даних мають доступ, чи потрібні секрети.
+        Мінімум 6 з 8 секцій мають бути присутні. Секція "MCPs" — обов'язкова.
+        Якщо файл < 30 рядків — ⚠️ занадто поверхневий.
+
+    - path: "docs/mcp/SECURITY.md"
+      instructions: |
+        Це документ моделі загроз для MCP — завдання День 4.
+        Перевір:
+        1. Описано загальні припущення довіри (host, server author, user).
+        2. Для КОЖНОГО підключеного або створеного MCP є секція з:
+           - Data accessed (до яких даних має доступ)
+           - Secrets used (які токени/ключі)
+           - Trust (першопартійний, спільнота, власний)
+           - Mitigations (scope, env-vars, pinned versions, disabled тощо)
+        3. Описано incident response (що робити при витоку секрету).
+        Оціни: ✅ покриває всі MCP з конкретикою / ⚠️ один-два MCP без розділу або поверхнево / ❌ порожній шаблон.
+
+    - path: "docs/mcp-testing/**"
+      instructions: |
+        Це A/B-тест для MCP — завдання День 4.
+        Перевір (виключи `README.md` і `.gitkeep`):
+        1. Описано, який саме MCP тестується.
+        2. Описано тестовий промпт (один і той самий для обох прогонів).
+        3. Результат З MCP — які інструменти викликались, що вийшло.
+        4. Результат БЕЗ MCP (`disabled: true` або видалений з конфігу) — як AI справився без нього.
+        5. Висновок — конкретна різниця, не загальні фрази.
+        Якщо немає обох результатів — ❌. Якщо висновок формальний — ⚠️.
+
+  # ── Pre-merge checks (grading criteria) ───────────────────────
+  pre_merge_checks:
+    title:
+      mode: "warning"
+      requirements: >
+        PR title should follow the format: "Day 4: <participant-name> — MCP Workshop Assignment"
+        or similar descriptive format in Ukrainian or English.
+
+    description:
+      mode: "warning"
+
+    custom_checks:
+      - mode: "warning"
+        name: "At least 2 public MCPs configured"
+        instructions: >
+          Check `.cursor/mcp.json.example` (or `.cursor/mcp.json` if it exists in the PR — but warn that
+          mcp.json should be gitignored). The file must be valid JSON with a `mcpServers` object containing
+          AT LEAST 2 public MCP servers (filesystem, github, context7, fetch, git, memory, etc.).
+          Each entry must:
+          1. Pin the package version (e.g. `@modelcontextprotocol/server-filesystem@2025.10.20`), not `@latest`.
+          2. Use `${env:VAR}` for secrets, never literal tokens.
+          3. Restrict filesystem roots to repo subdirectories — never `/` or `~`.
+          PASS if 2+ public servers configured with safe scoping and pinned versions.
+          FAIL if file missing, invalid JSON, fewer than 2 servers, literal secrets, or unscoped roots.
+
+      - mode: "warning"
+        name: "At least 1 custom MCP under mcp-examples/"
+        instructions: >
+          Check that the PR contains at least one custom MCP server directory under `mcp-examples/`.
+          The server must:
+          1. Be runnable — TypeScript variant has `package.json` + `src/server.ts` + `tsconfig.json`,
+             OR Python variant has `pyproject.toml` + `server.py`.
+          2. Register AT LEAST 2 tools (`server.registerTool` in TS, `@mcp.tool()` in Python).
+          3. Register AT LEAST 1 resource (`server.registerResource` in TS, `@mcp.resource()` in Python).
+          4. Have a `README.md` describing tools, run command, and Cursor wiring.
+          5. Use stdio transport via `StdioServerTransport` (TS) or `mcp.run()` (Python).
+          6. NOT write diagnostic output to stdout (breaks JSON-RPC) — only stderr.
+          PASS if a working custom MCP exists with 2+ tools, 1+ resource, README, and clean stdio.
+          FAIL if no custom MCP, fewer than 2 tools, missing README, or stdout pollution detected.
+
+      - mode: "warning"
+        name: "AGENTS.md with MCPs section"
+        instructions: >
+          Check that the PR contains an `AGENTS.md` file in the repo root with:
+          1. At least 6 of the 8 expected sections (Project Overview, Tech Stack, Project Structure,
+             Key Commands, Architecture, Conventions, Skills, MCPs).
+          2. A required "MCPs" section listing every connected/built MCP with: purpose, data accessed,
+             secrets used (or "none").
+          3. File length ≥ 30 lines.
+          PASS if AGENTS.md has 6+ sections including MCPs and ≥ 30 lines.
+          FAIL if file missing, fewer than 6 sections, or no MCPs section.
+
+      - mode: "warning"
+        name: "docs/mcp/SECURITY.md threat model"
+        instructions: >
+          Check that `docs/mcp/SECURITY.md` is present and substantive. It must contain:
+          1. Trust assumptions (user → host → server).
+          2. One section per connected/built MCP with: data accessed, secrets, trust, mitigations.
+          3. Incident response section (what to do if a secret leaks).
+          PASS if all three elements present and per-MCP sections are concrete (not template stubs).
+          FAIL if file missing, only template content, or per-MCP sections lack concrete data.
+
+      - mode: "warning"
+        name: "docs/mcp-testing/ A/B test"
+        instructions: >
+          Check that `docs/mcp-testing/` contains AT LEAST one A/B test document
+          (excluding `README.md` and `.gitkeep`). The document must contain ALL of:
+          1. Which MCP was tested.
+          2. The same prompt used for both runs.
+          3. Result WITH the MCP (which tools were called, what was produced).
+          4. Result WITHOUT the MCP (`disabled: true` or removed from config).
+          5. Concrete conclusion — what specific difference the MCP made.
+          PASS if at least one doc exists with all 5 elements and a concrete conclusion.
+          FAIL if folder empty, missing one of the elements, or conclusion is generic.
+
+      - mode: "warning"
+        name: ".cursor/mcp.json must be gitignored"
+        instructions: >
+          The committed file must be `.cursor/mcp.json.example`, NOT `.cursor/mcp.json`.
+          The actual `.cursor/mcp.json` may contain secrets and must be in `.gitignore`.
+          PASS if `.cursor/mcp.json.example` is present AND `.cursor/mcp.json` is gitignored
+          (and not present in the PR's tracked files).
+          FAIL if `.cursor/mcp.json` is committed in the PR — flag this as a security issue and
+          tell the author to rotate any secrets that were in the file.
+
+chat:
+  auto_reply: true
