@@ -11,7 +11,7 @@
     },
     "context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
+      "args": ["-y", "@upstash/context7-mcp@2.1.8"]
     },
     "github": {
       "command": "npx",
