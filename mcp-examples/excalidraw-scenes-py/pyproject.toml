@@ -1,7 +1,7 @@
 [project]
 name = "excalidraw-scenes-mcp"
-version = "0.1.0"
-description = "MCP server for working with .excalidraw scene files"
+version = "0.2.0"
+description = "MCP server for .excalidraw scenes and dev-docs/ in the monorepo"
 requires-python = ">=3.11"
 dependencies = ["mcp[cli]>=1.12.0"]
 

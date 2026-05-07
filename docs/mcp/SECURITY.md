@@ -43,10 +43,10 @@ Add one section per server below. A good entry covers: data accessed, secrets us
 
 ### excalidraw-scenes (custom)
 
-- **Data accessed:** reads `.excalidraw` files only (paths chosen by the agent, validated against the workspace).
+- **Data accessed:** reads `.excalidraw` files and files under `./dev-docs/` only (`*.md`, `*.mdx`), after resolving paths under the monorepo root; exposes an MCP resource with a static index for `dev-docs/`.
 - **Secrets:** none.
 - **Trust:** local code, reviewed by the team.
-- **Mitigations:** path validation in the server; runs as a subprocess of the host; no network calls.
+- **Mitigations:** path validation in the server (no traversal outside repo / `dev-docs/`); scene tools require the `.excalidraw` suffix; runs as a subprocess of the host; no network calls.
 
 ### `<your-custom-mcp>`
 

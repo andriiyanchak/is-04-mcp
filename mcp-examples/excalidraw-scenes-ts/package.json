@@ -1,7 +1,7 @@
 {
   "name": "excalidraw-scenes-mcp",
-  "version": "0.1.0",
-  "description": "MCP server for working with .excalidraw scene files",
+  "version": "0.2.0",
+  "description": "MCP server for .excalidraw scenes and dev-docs/ in the monorepo",
   "type": "module",
   "bin": {
     "excalidraw-scenes-mcp": "./dist/server.js"

@@ -1,18 +1,21 @@
 # excalidraw-scenes — TypeScript MCP Server
 
-Minimal MCP server that lets an AI agent work with `.excalidraw` files in the repo.
+MCP server for working with `.excalidraw` scenes and `dev-docs/` inside this monorepo. All scene and dev-docs paths are resolved **under the repository root** (no `..` escapes).
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
-| `list_scenes(dir)` | List `.excalidraw` files under a directory |
-| `read_scene(path)` | Return parsed JSON of one scene |
-| `extract_text(path)` | Return every text-element string in the scene |
+| `list_scenes(dir)` | List `.excalidraw` files in a **single directory** (path relative to repo root or absolute within repo) |
+| `read_scene(path)` | Return parsed JSON of one scene (pretty-printed text) |
+| `extract_text(path)` | Return every text-element string in the scene, one per line |
+| `summarize_scene(path)` | Compact JSON stats: element counts by type, text count, embedded file blob count (no `dataURL`s) |
+| `list_dev_docs(subdir?)` | List `.md` / `.mdx` under `dev-docs/`, optionally scoped to a subdirectory |
+| `read_dev_doc(path)` | Read one file under `dev-docs/`; argument is relative to `dev-docs/` (e.g. `docs/codebase/json-schema.mdx`) |
 
 ## Resource
 
-- `excalidraw://docs/architecture` — stub for `dev-docs/` (replace with a real reader during the workshop).
+- `excalidraw://docs/architecture` — short Markdown index, entry points, and pointers to the tools above.
 
 ## Run locally
 
@@ -38,8 +41,9 @@ After enabling, reload Cursor and confirm the server appears green in the MCP pa
 
 ## Test prompts
 
-- _"Use the excalidraw-scenes MCP to list every scene under `examples/`."_
-- _"Pick the first scene and tell me what text labels it contains."_
+- _"Use list_dev_docs with an empty subdir and read `docs/codebase/json-schema.mdx`."_
+- _"Use summarize_scene on `mcp-examples/excalidraw-scenes-ts/fixtures/sample.excalidraw`."_
+- _"Try read_scene with a path outside the repo and confirm it errors."_
 
 ## stdio gotcha
 
